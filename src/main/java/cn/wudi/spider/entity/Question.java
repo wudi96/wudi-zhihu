@@ -1,4 +1,4 @@
-package entity;
+package cn.wudi.spider.entity;
 
 import lombok.Getter;
 import lombok.Setter;

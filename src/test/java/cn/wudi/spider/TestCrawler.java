@@ -1,3 +1,5 @@
+package cn.wudi.spider;
+
 import cn.wudi.spider.http.IClient;
 import cn.wudi.spider.http.Request;
 import org.junit.Test;

@@ -1,5 +1,6 @@
-package entity;
+package cn.wudi.spider.entity;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -10,6 +11,11 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class Answer {
+public class Topic {
 
+  String topic;
+
+  Question question;
+
+  List<Answer> answer;
 }

@@ -1,8 +1,10 @@
-import entity.Answer;
-import entity.Question;
-import entity.Topic;
+package cn.wudi.spider;
+
+import cn.wudi.spider.entity.Question;
+import cn.wudi.spider.entity.Topic;
 import java.util.ArrayList;
 import org.junit.Test;
+import cn.wudi.spider.entity.Answer;
 
 public class TestTopic {
 

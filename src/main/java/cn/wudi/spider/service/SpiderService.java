@@ -9,4 +9,6 @@ import cn.wudi.spider.entity.Result;
 public interface SpiderService {
 
   <T extends CommonQuery> Result create(T query);
+
+  <T extends CommonQuery> Result summary(T query);
 }

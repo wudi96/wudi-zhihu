@@ -11,7 +11,7 @@
   </parent>
 
   <groupId>cn.wudi.spider</groupId>
-  <artifactId>wudi-study</artifactId>
+  <artifactId>wudi-zhihu</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <dependencies>

@@ -14,6 +14,5 @@ public class TopicQuery extends CommonQuery {
 
   private String topicTitle;
   private String topicId;
-  private String topicUrl;
   private String topicAnswerNum;
 }

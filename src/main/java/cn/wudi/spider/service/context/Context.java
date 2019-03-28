@@ -21,11 +21,6 @@ public interface Context<T> {
   String getTopicTitle();
 
   /**
-   * topicUrl
-   */
-  String getTopicUrl();
-
-  /**
    * 入参
    */
   T getQuery();

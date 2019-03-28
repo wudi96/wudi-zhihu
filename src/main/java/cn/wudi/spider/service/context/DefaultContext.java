@@ -16,8 +16,6 @@ public class DefaultContext<T> implements Context<T> {
 
   private String topicTitle;
 
-  private String topicUrl;
-
   /**
    * 传入参数
    */

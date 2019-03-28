@@ -47,4 +47,8 @@ public class Find extends AbstractFind {
   public String topicUrl() {
     return getContext().getQuery().getTopicUrl();
   }
+
+  public String topicAnswerNum() {
+    return getContext().getQuery().getTopicAnswerNum();
+  }
 }

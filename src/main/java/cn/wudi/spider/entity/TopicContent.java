@@ -11,9 +11,9 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class Topic {
+public class TopicContent {
 
-  String topic;
+  Question question;
 
-  List<TopicContent> topicContents;
+  List<Answer> answer;
 }

@@ -3,6 +3,7 @@ package cn.wudi.spider.service;
 import cn.wudi.spider.entity.CommonQuery;
 import cn.wudi.spider.entity.Result;
 import cn.wudi.spider.robot.base.AbstractFind;
+import cn.wudi.spider.robot.topcrawler.TopicCrawlerFind;
 import cn.wudi.spider.robot.topid.TopicIdFind;
 import cn.wudi.spider.robot.topsummary.TopicSummaryFind;
 import cn.wudi.spider.service.client.DefaultHttpClientFactory;
@@ -45,7 +46,9 @@ public class SpiderServiceImpl implements SpiderService {
 
   @Override
   public <T extends CommonQuery> Result crawler(T query) {
-    return null;
+    TopicCrawlerFind topicCrawlerFind = new TopicCrawlerFind();
+    createLoggerAndClient(topicCrawlerFind, query);
+    return topicCrawlerFind.findTopicContext();
   }
 
   private void createLoggerAndClient(AbstractFind fund, CommonQuery query) {

@@ -10,6 +10,9 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class SummaryQuery extends CommonQuery{
+public class TopicQuery extends CommonQuery {
+
+  private String topicTitle;
   private String topicId;
+  private String topicUrl;
 }

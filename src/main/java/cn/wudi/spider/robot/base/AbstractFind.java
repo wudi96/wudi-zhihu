@@ -6,7 +6,7 @@ import cn.wudi.spider.service.logger.ILogger;
 /**
  * @author wudi
  */
-public abstract class AbstractFind {
+public abstract class AbstractFind implements IFind {
 
   private ILogger logger;
 

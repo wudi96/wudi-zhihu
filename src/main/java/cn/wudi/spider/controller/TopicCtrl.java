@@ -1,9 +1,7 @@
 package cn.wudi.spider.controller;
 
-import cn.wudi.spider.entity.CrawlerQuery;
-import cn.wudi.spider.entity.CreateQuery;
 import cn.wudi.spider.entity.Result;
-import cn.wudi.spider.entity.SummaryQuery;
+import cn.wudi.spider.entity.TopicQuery;
 import cn.wudi.spider.service.SpiderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,17 +23,17 @@ public class TopicCtrl {
   }
 
   @RequestMapping(value = "/create", method = RequestMethod.POST)
-  Result create(@RequestBody CreateQuery createQuery) {
-    return Result.ok(spiderService.create(createQuery));
+  Result create(@RequestBody TopicQuery topicQuery) {
+    return Result.ok(spiderService.create(topicQuery));
   }
 
   @RequestMapping(value = "/summary", method = RequestMethod.POST)
-  Result create(@RequestBody SummaryQuery summaryQuery) {
-    return Result.ok(spiderService.summary(summaryQuery));
+  Result summary(@RequestBody TopicQuery topicQuery) {
+    return Result.ok(spiderService.summary(topicQuery));
   }
 
   @RequestMapping(value = "/crawler", method = RequestMethod.POST)
-  Result create(@RequestBody CrawlerQuery crawlerQuery) {
-    return Result.ok(spiderService.crawler(crawlerQuery));
+  Result crawler(@RequestBody TopicQuery topicQuery) {
+    return Result.ok(spiderService.crawler(topicQuery));
   }
 }

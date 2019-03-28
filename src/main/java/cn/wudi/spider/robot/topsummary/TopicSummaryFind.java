@@ -17,7 +17,9 @@ import org.jsoup.select.Elements;
  */
 public class TopicSummaryFind extends Find {
 
-  public Result<SummaryResult> findTopicSummary(String topicTitle, String topicId) {
+  public Result<SummaryResult> findTopicSummary() {
+    String topicTitle = topicTitle();
+    String topicId = topicId();
     SummaryResult summaryResult = new SummaryResult();
     summaryResult.setTopicTitle(topicTitle);
     summaryResult.setTopicId(topicId);

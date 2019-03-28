@@ -18,7 +18,8 @@ import org.jsoup.select.Elements;
  */
 public class TopicIdFind extends Find {
 
-  public Result<CreateResult> findTopId(String topicTitle) {
+  public Result<CreateResult> findTopId() {
+    String topicTitle = topicTitle();
     CreateResult createResult = new CreateResult();
     Response searchTopicResponse = request().GET().url(SEARCH_URL)
         .query("type", "content")

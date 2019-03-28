@@ -1,4 +1,4 @@
-package cn.wudi.spider.logger;
+package cn.wudi.spider.service.logger;
 
 /**
  * @author wudi 日志工厂

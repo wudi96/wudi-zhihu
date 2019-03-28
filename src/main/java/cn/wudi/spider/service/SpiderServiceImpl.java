@@ -3,10 +3,10 @@ package cn.wudi.spider.service;
 import cn.wudi.spider.entity.CommonQuery;
 import cn.wudi.spider.entity.Result;
 import cn.wudi.spider.entity.SummaryQuery;
-import cn.wudi.spider.logger.support.LocalLoggerFactory;
+import cn.wudi.spider.service.logger.support.LocalLoggerFactory;
 import cn.wudi.spider.robot.base.AbstractFind;
-import cn.wudi.spider.robot.base.DefaultHttpClientFactory;
-import cn.wudi.spider.robot.base.HttpClientFactory;
+import cn.wudi.spider.service.client.DefaultHttpClientFactory;
+import cn.wudi.spider.service.client.HttpClientFactory;
 import cn.wudi.spider.robot.topid.TopicIdFind;
 import cn.wudi.spider.robot.topsummary.TopicSummaryFind;
 import org.springframework.stereotype.Service;
@@ -40,7 +40,12 @@ public class SpiderServiceImpl implements SpiderService {
     String topicTitle = query.getTopicTitle();
     TopicSummaryFind topicSummaryFind = new TopicSummaryFind();
     createLoggerAndClient(topicSummaryFind, topicId);
-    return topicSummaryFind.findTopicSummary(topicTitle,topicId);
+    return topicSummaryFind.findTopicSummary(topicTitle, topicId);
+  }
+
+  @Override
+  public <T extends CommonQuery> Result crawler(T query) {
+    return null;
   }
 
   private void createLoggerAndClient(AbstractFind fund, String id) {

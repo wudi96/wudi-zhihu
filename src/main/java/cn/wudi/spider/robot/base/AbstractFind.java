@@ -1,7 +1,7 @@
 package cn.wudi.spider.robot.base;
 
 import cn.wudi.spider.http.IClient;
-import cn.wudi.spider.logger.ILogger;
+import cn.wudi.spider.service.logger.ILogger;
 
 /**
  * @author wudi

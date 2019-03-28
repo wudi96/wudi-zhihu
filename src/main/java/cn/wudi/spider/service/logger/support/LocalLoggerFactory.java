@@ -1,7 +1,7 @@
-package cn.wudi.spider.logger.support;
+package cn.wudi.spider.service.logger.support;
 
-import cn.wudi.spider.logger.ILogger;
-import cn.wudi.spider.logger.ILoggerFactory;
+import cn.wudi.spider.service.logger.ILogger;
+import cn.wudi.spider.service.logger.ILoggerFactory;
 
 /**
  * @author wudi

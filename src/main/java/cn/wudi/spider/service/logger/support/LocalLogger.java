@@ -1,9 +1,9 @@
-package cn.wudi.spider.logger.support;
+package cn.wudi.spider.service.logger.support;
 
-import static cn.wudi.spider.logger.support.DateUtils.yearMonthDay;
+import static cn.wudi.spider.service.logger.support.DateUtils.yearMonthDay;
 
-import cn.wudi.spider.concurrent.Once;
-import cn.wudi.spider.logger.ILogger;
+import cn.wudi.spider.service.concurrent.Once;
+import cn.wudi.spider.service.logger.ILogger;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;

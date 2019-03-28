@@ -1,5 +1,6 @@
 package cn.wudi.spider.controller;
 
+import cn.wudi.spider.entity.CrawlerQuery;
 import cn.wudi.spider.entity.CreateQuery;
 import cn.wudi.spider.entity.Result;
 import cn.wudi.spider.entity.SummaryQuery;
@@ -31,5 +32,10 @@ public class TopicCtrl {
   @RequestMapping(value = "/summary", method = RequestMethod.POST)
   Result create(@RequestBody SummaryQuery summaryQuery) {
     return Result.ok(spiderService.summary(summaryQuery));
+  }
+
+  @RequestMapping(value = "/crawler", method = RequestMethod.POST)
+  Result create(@RequestBody CrawlerQuery crawlerQuery) {
+    return Result.ok(spiderService.crawler(crawlerQuery));
   }
 }

@@ -1,4 +1,4 @@
-package cn.wudi.spider.concurrent;
+package cn.wudi.spider.service.concurrent;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author wudi
  */
 public class Once {
+
   private final Lock lock = new ReentrantLock();
   private final AtomicInteger done = new AtomicInteger();
 

@@ -1,4 +1,4 @@
-package cn.wudi.spider.robot.base;
+package cn.wudi.spider.service.client;
 
 import cn.wudi.spider.http.IClient;
 

@@ -16,4 +16,5 @@ public class SummaryResult {
   private String topicTitle;
   private String topicAnswerNum;
   private String topicUrl;
+  private String topicAttentionNum;
 }

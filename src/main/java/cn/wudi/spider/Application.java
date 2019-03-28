@@ -10,7 +10,8 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ComponentScan(
     basePackages = {
-        "cn.wudi.spider.controller"
+        "cn.wudi.spider.controller",
+        "cn.wudi.spider.service",
     }
 )
 public class Application {

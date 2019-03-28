@@ -7,5 +7,5 @@ import cn.wudi.spider.http.IClient;
  */
 public interface HttpClientFactory {
 
-  IClient getClient(String session);
+  IClient newClient(String session);
 }

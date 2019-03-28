@@ -8,7 +8,7 @@ import cn.wudi.spider.http.IClient;
 public class DefaultHttpClientFactory implements HttpClientFactory {
 
   @Override
-  public IClient getClient(String session) {
+  public IClient newClient(String session) {
     return IClient.newBuilder()
         .session(session)
         .verbose(false)

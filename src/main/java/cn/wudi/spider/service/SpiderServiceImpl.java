@@ -3,7 +3,6 @@ package cn.wudi.spider.service;
 import cn.wudi.spider.entity.CommonQuery;
 import cn.wudi.spider.entity.Result;
 import cn.wudi.spider.entity.SummaryQuery;
-import cn.wudi.spider.entity.SummaryResult;
 import cn.wudi.spider.logger.support.LocalLoggerFactory;
 import cn.wudi.spider.robot.base.AbstractFind;
 import cn.wudi.spider.robot.base.DefaultHttpClientFactory;
@@ -45,7 +44,7 @@ public class SpiderServiceImpl implements SpiderService {
   }
 
   private void createLoggerAndClient(AbstractFind fund, String id) {
-    fund.setClient(httpClientFactory.getClient(id));
+    fund.setClient(httpClientFactory.newClient(id));
     fund.setLogger(localLoggerFactory.newLogger(id));
   }
 }

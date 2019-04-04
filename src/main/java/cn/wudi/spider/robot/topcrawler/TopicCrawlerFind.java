@@ -13,10 +13,18 @@ import cn.wudi.spider.entity.Topic;
 import cn.wudi.spider.entity.TopicContent;
 import cn.wudi.spider.http.Response;
 import cn.wudi.spider.robot.base.Find;
+import cn.wudi.spider.utils.RegexUtils;
+import cn.wudi.spider.utils.TimeFormatUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.regex.Matcher;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 /**
  * @author wudi
@@ -38,7 +46,7 @@ public class TopicCrawlerFind extends Find {
       Response topicContentResponse = getResponse(topicContextUrl, i, 10);
       logger().println(topicContentResponse.url().toString());
       String topicContentStr = topicContentResponse.string();
-      logger().writeFile("topCon10_" + tenNum + ".json", topicContentStr);
+      logger().writeFile("topCon10_" + i + ".json", topicContentStr);
       parseTopCont(topicContents, topicContentStr);
     }
 
@@ -63,24 +71,70 @@ public class TopicCrawlerFind extends Find {
       Question question = new Question();
       JSONObject o = (JSONObject) datum;
       JSONObject questionJson = (JSONObject) JSONPath.eval(o, "$.target.question");
+      if (questionJson == null) {
+        return;
+      }
       String questionId = questionJson.getString("id");
       question.setId(questionId);
-      question.setTitle(questionJson.getString("title"));
+      question.setCrawlTime(TimeFormatUtils.valueOf(new Date(), "yyyy-MM-dd HH:mm:ss"));
       String questionUrl = QUESTION_PREFIX + questionId;
       question.setUrl(questionUrl);
+      question.setTitle(questionJson.getString("title"));
+      //问题细节
+      getQuestionDetail(question, questionUrl);
       topicContent.setQuestion(question);
 
       ArrayList<Answer> answerList = new ArrayList<>();
       String answerId = String.valueOf(JSONPath.eval(o, "$.target.id"));
       String answerContent = (String) JSONPath.eval(o, "$.target.content");
+      String voteCount = String.valueOf(JSONPath.eval(o, "$.target.voteup_count"));
+      String commentCount = String.valueOf(JSONPath.eval(o, "$.target.comment_count"));
+      String createdTime = String.valueOf(JSONPath.eval(o, "$.target.created_time"));
+      String updatedTime = String.valueOf(JSONPath.eval(o, "$.target.updated_time"));
       Answer answer = new Answer();
       answer.setId(answerId);
       answer.setUrl(questionUrl + ANSWER_SUFFIX + answerId);
+      answer.setVoteCount(voteCount);
+      answer.setCommentCount(commentCount);
+      answer.setCreateTime(TimeFormatUtils
+          .valueOf(new Date(Long.valueOf(createdTime + "000")), "yyyy-MM-dd HH:mm:ss"));
+      answer.setModifyTime(TimeFormatUtils
+          .valueOf(new Date(Long.valueOf(updatedTime + "000")), "yyyy-MM-dd HH:mm:ss"));
       answer.setContent(answerContent);
       answerList.add(answer);
       topicContent.setAnswer(answerList);
       topicContents.add(topicContent);
     }
+  }
+
+  private void getQuestionDetail(Question question, String questionUrl) {
+    Response response = request().GET().url(questionUrl).send();
+    String string = response.string();
+    logger().writeFile(questionUrl + ".html", string);
+    Document parse = Jsoup.parse(string);
+    Elements questionHeader = parse.select(".QuestionHeaderActions");
+    Matcher questionHeaderMatcher = RegexUtils.getMatcher(questionHeader.text(), "(\\d+) 条评论");
+    if (questionHeaderMatcher.find()) {
+      question.setCommentCount(questionHeaderMatcher.group(1));
+    }
+    Elements numberBoards = parse.select(".NumberBoard-itemName");
+    for (Element numberBoard : numberBoards) {
+      if ("关注者".equals(numberBoard.text())) {
+        question.setStareCount(numberBoard.nextElementSibling().text());
+      }
+      if ("被浏览".equals(numberBoard.text())) {
+        question.setBrowseCount(numberBoard.nextElementSibling().text());
+      }
+    }
+    ArrayList<String> tags = new ArrayList<>();
+    Elements topicLinks = parse.select(".TopicLink");
+    for (Element topicLink : topicLinks) {
+      tags.add(topicLink.text());
+    }
+    question.setTags(tags);
+
+    Elements text = parse.select(".QuestionHeader-detail").select(".RichText");
+    question.setDetail(text.text());
   }
 
   private Response getResponse(String topicContextUrl, int tenNum, int tenElseNum) {

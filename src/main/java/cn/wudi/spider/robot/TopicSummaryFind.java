@@ -1,4 +1,4 @@
-package cn.wudi.spider.robot.topsummary;
+package cn.wudi.spider.robot;
 
 import static cn.wudi.spider.constant.Constant.TOP_PREFIX;
 import static cn.wudi.spider.constant.Constant.TOP_SUFFIX;

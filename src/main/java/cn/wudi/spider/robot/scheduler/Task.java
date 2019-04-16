@@ -1,4 +1,4 @@
-package cn.wudi.spider.robot.topcrawler;
+package cn.wudi.spider.robot.scheduler;
 
 import static cn.wudi.spider.constant.Constant.ANSWER_SUFFIX;
 import static cn.wudi.spider.constant.Constant.INCLUDE;
@@ -6,11 +6,12 @@ import static cn.wudi.spider.constant.Constant.QUESTION_PREFIX;
 import static cn.wudi.spider.constant.Constant.TOP_API_PREFIX;
 import static cn.wudi.spider.constant.Constant.TOP_API_SUFFIX;
 
-import cn.wudi.spider.entity.Answer;
-import cn.wudi.spider.entity.Question;
-import cn.wudi.spider.entity.Result;
-import cn.wudi.spider.entity.Topic;
-import cn.wudi.spider.entity.TopicContent;
+import cn.wudi.spider.entity.CrawlerResult;
+import cn.wudi.spider.entity.Status;
+import cn.wudi.spider.entity.topic.Answer;
+import cn.wudi.spider.entity.topic.Question;
+import cn.wudi.spider.entity.topic.Topic;
+import cn.wudi.spider.entity.topic.TopicContent;
 import cn.wudi.spider.http.Response;
 import cn.wudi.spider.robot.base.Find;
 import cn.wudi.spider.utils.RegexUtils;
@@ -21,6 +22,9 @@ import com.alibaba.fastjson.JSONPath;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.regex.Matcher;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,12 +33,39 @@ import org.jsoup.select.Elements;
 /**
  * @author wudi
  */
-public class TopicCrawlerFind extends Find {
+@Getter
+@Setter
+@Accessors(chain = true)
+public class Task implements Runnable {
 
-  public Result<Topic> findTopicContext() {
-    String topicTitle = topicTitle();
-    String topicId = topicId();
-    String topicAnswerNum = topicAnswerNum();
+  private String topicTitle;
+  private String topicId;
+  private String topicAnswerNum;
+  private String threadName;
+  private Find find;
+  private CrawlerResult crawlerResult;
+
+  public Task(Find find, CrawlerResult crawlerResult, String topicTitle,
+      String topicId, String topicAnswerNum) {
+    this.topicTitle = topicTitle;
+    this.topicId = topicId;
+    this.topicAnswerNum = topicAnswerNum;
+    this.threadName =
+        "thread_pool_" + this.topicTitle + "_" + this.topicId + "_" + this.topicAnswerNum;
+    this.find = find;
+    this.crawlerResult = crawlerResult;
+  }
+
+  @Override
+  public void run() {
+    try {
+      getTopic();
+    } catch (Exception e) {
+      throw new RuntimeException("线程执行异常");
+    }
+  }
+
+  private void getTopic() {
     int topAnswerNumInt = Integer.parseInt(topicAnswerNum);
 
     int tenNum = topAnswerNumInt / 10;
@@ -44,22 +75,21 @@ public class TopicCrawlerFind extends Find {
     ArrayList<TopicContent> topicContents = new ArrayList<>();
     for (int i = 0; i < tenNum; i++) {
       Response topicContentResponse = getResponse(topicContextUrl, i, 10);
-      logger().println(topicContentResponse.url().toString());
+      this.find.logger().println(topicContentResponse.url().toString());
       String topicContentStr = topicContentResponse.string();
-      logger().writeFile("topCon10_" + i + ".json", topicContentStr);
+      this.find.logger().writeFile("topCon10_" + i + ".json", topicContentStr);
       parseTopCont(topicContents, topicContentStr);
     }
 
     Response topicContentElseResponse = getResponse(topicContextUrl, tenNum, tenElseNum);
-    logger().println(topicContentElseResponse.url().toString());
+    this.find.logger().println(topicContentElseResponse.url().toString());
     String topicContentElseStr = topicContentElseResponse.string();
-    logger().writeFile("topConElse.json", topicContentElseStr);
+    this.find.logger().writeFile("topConElse.json", topicContentElseStr);
     parseTopCont(topicContents, topicContentElseStr);
 
     Topic topic = new Topic();
     topic.setTopic(topicTitle);
     topic.setTopicContents(topicContents);
-    return Result.ok(topic);
   }
 
   private void parseTopCont(ArrayList<TopicContent> topicContents, String topicContentStr) {
@@ -108,9 +138,9 @@ public class TopicCrawlerFind extends Find {
   }
 
   private void getQuestionDetail(Question question, String questionUrl) {
-    Response response = request().GET().url(questionUrl).send();
+    Response response = this.find.request().GET().url(questionUrl).send();
     String string = response.string();
-    logger().writeFile(questionUrl + ".html", string);
+    this.find.logger().writeFile(questionUrl + ".html", string);
     Document parse = Jsoup.parse(string);
     Elements questionHeader = parse.select(".QuestionHeaderActions");
     Matcher questionHeaderMatcher = RegexUtils.getMatcher(questionHeader.text(), "(\\d+) 条评论");
@@ -138,7 +168,7 @@ public class TopicCrawlerFind extends Find {
   }
 
   private Response getResponse(String topicContextUrl, int tenNum, int tenElseNum) {
-    return request().GET().url(topicContextUrl)
+    return this.find.request().GET().url(topicContextUrl)
         .query("include", INCLUDE)
         .query("offset", String.valueOf(tenNum * 10))
         .query("limit", String.valueOf(tenElseNum))

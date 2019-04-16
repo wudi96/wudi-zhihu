@@ -1,4 +1,4 @@
-package cn.wudi.spider.robot.topid;
+package cn.wudi.spider.robot;
 
 import static cn.wudi.spider.constant.Constant.SEARCH_URL;
 

@@ -1,4 +1,4 @@
-package cn.wudi.spider.entity;
+package cn.wudi.spider.entity.topic;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import java.util.List;

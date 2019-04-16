@@ -1,4 +1,4 @@
-package cn.wudi.spider.entity;
+package cn.wudi.spider.entity.topic;
 
 import java.util.List;
 import lombok.Getter;
@@ -11,9 +11,9 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class TopicContent {
+public class Topic {
 
-  Question question;
+  String topic;
 
-  List<Answer> answer;
+  List<TopicContent> topicContents;
 }

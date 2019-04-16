@@ -1,18 +1,26 @@
 package cn.wudi.spider.service;
 
 import cn.wudi.spider.entity.CommonQuery;
+import cn.wudi.spider.entity.CrawlerResult;
 import cn.wudi.spider.entity.CreateResult;
 import cn.wudi.spider.entity.Result;
+import cn.wudi.spider.entity.Status;
+import cn.wudi.spider.robot.TopicCrawlerFind;
+import cn.wudi.spider.robot.TopicIdFind;
+import cn.wudi.spider.robot.TopicSummaryFind;
 import cn.wudi.spider.robot.base.AbstractFind;
-import cn.wudi.spider.robot.topcrawler.TopicCrawlerFind;
-import cn.wudi.spider.robot.topid.TopicIdFind;
-import cn.wudi.spider.robot.topsummary.TopicSummaryFind;
+import cn.wudi.spider.robot.scheduler.Task;
 import cn.wudi.spider.service.client.DefaultHttpClientFactory;
 import cn.wudi.spider.service.client.HttpClientFactory;
 import cn.wudi.spider.service.context.ContextFactory;
 import cn.wudi.spider.service.context.DefaultContextFactory;
 import cn.wudi.spider.service.logger.support.LocalLoggerFactory;
 import cn.wudi.spider.service.redis.TopicTitleRedis;
+import cn.wudi.spider.service.thread.DefaultThreadFactory;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +28,14 @@ import org.springframework.stereotype.Service;
  * @author wudi
  */
 @Service
+@Slf4j
 public class SpiderServiceImpl implements SpiderService {
 
   private final HttpClientFactory httpClientFactory;
   private final LocalLoggerFactory localLoggerFactory;
   private final ContextFactory contextFactory;
   private final TopicTitleRedis topicTitleRedis;
+  private final ThreadPoolExecutor executor;
 
   @Autowired
   public SpiderServiceImpl(TopicTitleRedis topicTitleRedis) {
@@ -34,6 +44,8 @@ public class SpiderServiceImpl implements SpiderService {
     this.localLoggerFactory = new LocalLoggerFactory();
     this.localLoggerFactory.setHomePath("./logs");
     this.topicTitleRedis = topicTitleRedis;
+    this.executor = new ThreadPoolExecutor(5, 10, 5000, TimeUnit.MILLISECONDS,
+        new ArrayBlockingQueue<>(5), new DefaultThreadFactory());
   }
 
   @Override
@@ -70,7 +82,12 @@ public class SpiderServiceImpl implements SpiderService {
   public <T extends CommonQuery> Result crawler(T query) {
     TopicCrawlerFind topicCrawlerFind = new TopicCrawlerFind();
     createLoggerAndClient(topicCrawlerFind, query);
-    return topicCrawlerFind.findTopicContext();
+    CrawlerResult crawlerResult = new CrawlerResult();
+    crawlerResult.setStatus(Status.RUSHING);
+    Task task = topicCrawlerFind.createTask(crawlerResult);
+    Thread thread = executor.getThreadFactory().newThread(task);
+    thread.start();
+    return Result.ok(crawlerResult);
   }
 
   private void createLoggerAndClient(AbstractFind fund, CommonQuery query) {

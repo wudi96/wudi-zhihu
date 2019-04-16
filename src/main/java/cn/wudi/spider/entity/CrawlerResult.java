@@ -1,6 +1,5 @@
 package cn.wudi.spider.entity;
 
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -11,9 +10,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class Topic {
+public class CrawlerResult {
 
-  String topic;
-
-  List<TopicContent> topicContents;
+  private String status;
 }

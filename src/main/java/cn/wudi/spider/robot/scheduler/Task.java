@@ -6,6 +6,7 @@ import static cn.wudi.spider.constant.Constant.QUESTION_PREFIX;
 import static cn.wudi.spider.constant.Constant.TOP_API_PREFIX;
 import static cn.wudi.spider.constant.Constant.TOP_API_SUFFIX;
 
+import cn.wudi.spider.entity.Status;
 import cn.wudi.spider.entity.topic.Answer;
 import cn.wudi.spider.entity.topic.Question;
 import cn.wudi.spider.entity.topic.TopicContent;
@@ -19,6 +20,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,9 +44,10 @@ public class Task implements Runnable {
   private String threadName;
   private Find find;
   private TopicContentMongo topicContentMongo;
+  private HashMap<String, String> threadMap;
 
   public Task(Find find, TopicContentMongo topicContentMongo,
-      String topicTitle,
+      HashMap<String, String> threadMap, String topicTitle,
       String topicId, String topicAnswerNum) {
     this.topicTitle = topicTitle;
     this.topicId = topicId;
@@ -53,11 +56,17 @@ public class Task implements Runnable {
         "thread_pool_" + this.topicTitle + "_" + this.topicId + "_" + this.topicAnswerNum;
     this.find = find;
     this.topicContentMongo = topicContentMongo;
+    this.threadMap = threadMap;
   }
 
   @Override
   public void run() {
-    getTopic();
+    try {
+      getTopic();
+      threadMap.put(this.threadName, Status.SUCCESS);
+    } catch (Exception e) {
+      threadMap.put(this.threadName, Status.ERR);
+    }
   }
 
   private void getTopic() {

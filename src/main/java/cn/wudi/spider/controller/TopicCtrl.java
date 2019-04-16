@@ -44,4 +44,9 @@ public class TopicCtrl {
   Result result(@RequestBody TopicQuery topicQuery) {
     return Result.ok(spiderService.result(topicQuery));
   }
+
+  @RequestMapping(value = "/status", method = RequestMethod.POST)
+  Result status(@RequestBody TopicQuery topicQuery) {
+    return Result.ok(spiderService.status(topicQuery));
+  }
 }

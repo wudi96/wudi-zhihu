@@ -5,10 +5,10 @@ import cn.wudi.spider.entity.CrawlerResult;
 import cn.wudi.spider.entity.CreateResult;
 import cn.wudi.spider.entity.Result;
 import cn.wudi.spider.entity.Status;
-import cn.wudi.spider.entity.TopicQuery;
 import cn.wudi.spider.robot.TopicCrawlerFind;
 import cn.wudi.spider.robot.TopicIdFind;
 import cn.wudi.spider.robot.TopicResult;
+import cn.wudi.spider.robot.TopicStatus;
 import cn.wudi.spider.robot.TopicSummaryFind;
 import cn.wudi.spider.robot.base.AbstractFind;
 import cn.wudi.spider.robot.scheduler.Task;
@@ -20,6 +20,7 @@ import cn.wudi.spider.service.logger.support.LocalLoggerFactory;
 import cn.wudi.spider.service.mongo.TopicContentMongo;
 import cn.wudi.spider.service.redis.TopicTitleRedis;
 import cn.wudi.spider.service.thread.DefaultThreadFactory;
+import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +41,8 @@ public class SpiderServiceImpl implements SpiderService {
   private final TopicTitleRedis topicTitleRedis;
   private final ThreadPoolExecutor executor;
   private final TopicContentMongo topicContentMongo;
+
+  private HashMap<String, String> threadMap = new HashMap<>();
 
   @Autowired
   public SpiderServiceImpl(TopicTitleRedis topicTitleRedis,
@@ -92,13 +95,21 @@ public class SpiderServiceImpl implements SpiderService {
   }
 
   @Override
+  public <T extends CommonQuery> Result status(T query) {
+    TopicStatus topicStatus = new TopicStatus();
+    createLoggerAndClient(topicStatus, query);
+    return topicStatus.status(threadMap);
+  }
+
+  @Override
   public <T extends CommonQuery> Result crawler(T query) {
     TopicCrawlerFind topicCrawlerFind = new TopicCrawlerFind();
     createLoggerAndClient(topicCrawlerFind, query);
     CrawlerResult crawlerResult = new CrawlerResult();
     crawlerResult.setStatus(Status.RUSHING);
-    Task task = topicCrawlerFind.createTask(topicContentMongo);
+    Task task = topicCrawlerFind.createTask(topicContentMongo, threadMap);
     Thread thread = executor.getThreadFactory().newThread(task);
+    threadMap.put(thread.getName(), Status.RUSHING);
     thread.start();
     return Result.ok(crawlerResult);
   }

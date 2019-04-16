@@ -15,4 +15,6 @@ public interface SpiderService {
   <T extends CommonQuery> Result summary(T query);
 
   <T extends CommonQuery> Result result(T query);
+
+  <T extends CommonQuery> Result status(T query);
 }

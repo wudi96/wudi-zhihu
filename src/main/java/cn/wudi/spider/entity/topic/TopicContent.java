@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.Id;
 
 /**
  * @author wudi
@@ -19,7 +20,6 @@ public class TopicContent {
 
   String topicId;
 
-  String questionId;
-
-  String answerId;
+  @Id
+  String questionAnswerId;
 }

@@ -135,8 +135,7 @@ public class Task implements Runnable {
       answerList.add(answer);
       topicContent.setAnswer(answerList);
 
-      topicContent.setQuestionId(questionId);
-      topicContent.setAnswerId(answerId);
+      topicContent.setQuestionAnswerId(questionId + answerId);
       topicContent.setTopicId(topicId);
       topicContents.add(topicContent);
     }

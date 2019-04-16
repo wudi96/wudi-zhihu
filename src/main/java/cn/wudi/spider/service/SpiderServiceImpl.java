@@ -20,6 +20,7 @@ import cn.wudi.spider.service.logger.support.LocalLoggerFactory;
 import cn.wudi.spider.service.mongo.TopicContentMongo;
 import cn.wudi.spider.service.redis.TopicTitleRedis;
 import cn.wudi.spider.service.thread.DefaultThreadFactory;
+import com.alibaba.fastjson.JSONObject;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -118,5 +119,10 @@ public class SpiderServiceImpl implements SpiderService {
     fund.setClient(httpClientFactory.newClient(query.getTopicTitle()));
     fund.setLogger(localLoggerFactory.newLogger(query.getTopicTitle()));
     fund.setContext(contextFactory.newContext(query));
+  }
+
+  public JSONObject clear() {
+    this.threadMap.clear();
+    return new JSONObject().fluentPut("msg", "清理状态成功");
   }
 }

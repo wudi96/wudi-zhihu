@@ -37,14 +37,26 @@ public class Find extends AbstractFind {
   }
 
   public String topicTitle() {
-    return getContext().getQuery().getTopicTitle();
+    String topicTitle = getContext().getQuery().getTopicTitle();
+    paramEmpty(topicTitle);
+    return topicTitle;
   }
 
   public String topicId() {
-    return getContext().getQuery().getTopicId();
+    String topicId = getContext().getQuery().getTopicId();
+    paramEmpty(topicId);
+    return topicId;
   }
 
   public String topicAnswerNum() {
-    return getContext().getQuery().getTopicAnswerNum();
+    String topicAnswerNum = getContext().getQuery().getTopicAnswerNum();
+    paramEmpty(topicAnswerNum);
+    return topicAnswerNum;
+  }
+
+  private void paramEmpty(String param) {
+    if (param == null) {
+      throw new RuntimeException("参数不全");
+    }
   }
 }

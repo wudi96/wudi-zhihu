@@ -16,4 +16,10 @@ public class TopicContent {
   Question question;
 
   List<Answer> answer;
+
+  String topicId;
+
+  String questionId;
+
+  String answerId;
 }

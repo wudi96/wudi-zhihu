@@ -5,8 +5,10 @@ import cn.wudi.spider.entity.CrawlerResult;
 import cn.wudi.spider.entity.CreateResult;
 import cn.wudi.spider.entity.Result;
 import cn.wudi.spider.entity.Status;
+import cn.wudi.spider.entity.TopicQuery;
 import cn.wudi.spider.robot.TopicCrawlerFind;
 import cn.wudi.spider.robot.TopicIdFind;
+import cn.wudi.spider.robot.TopicResult;
 import cn.wudi.spider.robot.TopicSummaryFind;
 import cn.wudi.spider.robot.base.AbstractFind;
 import cn.wudi.spider.robot.scheduler.Task;
@@ -15,6 +17,7 @@ import cn.wudi.spider.service.client.HttpClientFactory;
 import cn.wudi.spider.service.context.ContextFactory;
 import cn.wudi.spider.service.context.DefaultContextFactory;
 import cn.wudi.spider.service.logger.support.LocalLoggerFactory;
+import cn.wudi.spider.service.mongo.TopicContentMongo;
 import cn.wudi.spider.service.redis.TopicTitleRedis;
 import cn.wudi.spider.service.thread.DefaultThreadFactory;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -36,9 +39,12 @@ public class SpiderServiceImpl implements SpiderService {
   private final ContextFactory contextFactory;
   private final TopicTitleRedis topicTitleRedis;
   private final ThreadPoolExecutor executor;
+  private final TopicContentMongo topicContentMongo;
 
   @Autowired
-  public SpiderServiceImpl(TopicTitleRedis topicTitleRedis) {
+  public SpiderServiceImpl(TopicTitleRedis topicTitleRedis,
+      TopicContentMongo topicContentMongo) {
+    this.topicContentMongo = topicContentMongo;
     this.httpClientFactory = new DefaultHttpClientFactory();
     this.contextFactory = new DefaultContextFactory();
     this.localLoggerFactory = new LocalLoggerFactory();
@@ -79,12 +85,19 @@ public class SpiderServiceImpl implements SpiderService {
   }
 
   @Override
+  public <T extends CommonQuery> Result result(T query) {
+    TopicResult topicResult = new TopicResult();
+    createLoggerAndClient(topicResult, query);
+    return topicResult.result(topicContentMongo);
+  }
+
+  @Override
   public <T extends CommonQuery> Result crawler(T query) {
     TopicCrawlerFind topicCrawlerFind = new TopicCrawlerFind();
     createLoggerAndClient(topicCrawlerFind, query);
     CrawlerResult crawlerResult = new CrawlerResult();
     crawlerResult.setStatus(Status.RUSHING);
-    Task task = topicCrawlerFind.createTask(crawlerResult);
+    Task task = topicCrawlerFind.createTask(topicContentMongo);
     Thread thread = executor.getThreadFactory().newThread(task);
     thread.start();
     return Result.ok(crawlerResult);

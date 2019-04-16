@@ -39,4 +39,9 @@ public class TopicCtrl {
   Result crawler(@RequestBody TopicQuery topicQuery) {
     return Result.ok(spiderService.crawler(topicQuery));
   }
+
+  @RequestMapping(value = "/result", method = RequestMethod.POST)
+  Result result(@RequestBody TopicQuery topicQuery) {
+    return Result.ok(spiderService.result(topicQuery));
+  }
 }

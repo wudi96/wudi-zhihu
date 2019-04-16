@@ -10,3 +10,8 @@ spring:
         max-wait:
         max-idle: 8
         min-idle: 0
+  data:
+    mongodb:
+      host: 127.0.0.1
+      port: 27017
+      database: mongdbname

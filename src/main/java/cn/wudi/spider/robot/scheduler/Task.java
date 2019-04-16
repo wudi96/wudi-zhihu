@@ -6,14 +6,12 @@ import static cn.wudi.spider.constant.Constant.QUESTION_PREFIX;
 import static cn.wudi.spider.constant.Constant.TOP_API_PREFIX;
 import static cn.wudi.spider.constant.Constant.TOP_API_SUFFIX;
 
-import cn.wudi.spider.entity.CrawlerResult;
-import cn.wudi.spider.entity.Status;
 import cn.wudi.spider.entity.topic.Answer;
 import cn.wudi.spider.entity.topic.Question;
-import cn.wudi.spider.entity.topic.Topic;
 import cn.wudi.spider.entity.topic.TopicContent;
 import cn.wudi.spider.http.Response;
 import cn.wudi.spider.robot.base.Find;
+import cn.wudi.spider.service.mongo.TopicContentMongo;
 import cn.wudi.spider.utils.RegexUtils;
 import cn.wudi.spider.utils.TimeFormatUtils;
 import com.alibaba.fastjson.JSONArray;
@@ -43,9 +41,10 @@ public class Task implements Runnable {
   private String topicAnswerNum;
   private String threadName;
   private Find find;
-  private CrawlerResult crawlerResult;
+  private TopicContentMongo topicContentMongo;
 
-  public Task(Find find, CrawlerResult crawlerResult, String topicTitle,
+  public Task(Find find, TopicContentMongo topicContentMongo,
+      String topicTitle,
       String topicId, String topicAnswerNum) {
     this.topicTitle = topicTitle;
     this.topicId = topicId;
@@ -53,16 +52,12 @@ public class Task implements Runnable {
     this.threadName =
         "thread_pool_" + this.topicTitle + "_" + this.topicId + "_" + this.topicAnswerNum;
     this.find = find;
-    this.crawlerResult = crawlerResult;
+    this.topicContentMongo = topicContentMongo;
   }
 
   @Override
   public void run() {
-    try {
-      getTopic();
-    } catch (Exception e) {
-      throw new RuntimeException("线程执行异常");
-    }
+    getTopic();
   }
 
   private void getTopic() {
@@ -86,10 +81,7 @@ public class Task implements Runnable {
     String topicContentElseStr = topicContentElseResponse.string();
     this.find.logger().writeFile("topConElse.json", topicContentElseStr);
     parseTopCont(topicContents, topicContentElseStr);
-
-    Topic topic = new Topic();
-    topic.setTopic(topicTitle);
-    topic.setTopicContents(topicContents);
+    topicContents.forEach(o -> topicContentMongo.set(o));
   }
 
   private void parseTopCont(ArrayList<TopicContent> topicContents, String topicContentStr) {
@@ -133,6 +125,10 @@ public class Task implements Runnable {
       answer.setContent(answerContent);
       answerList.add(answer);
       topicContent.setAnswer(answerList);
+
+      topicContent.setQuestionId(questionId);
+      topicContent.setAnswerId(answerId);
+      topicContent.setTopicId(topicId);
       topicContents.add(topicContent);
     }
   }

@@ -6,7 +6,8 @@ package cn.wudi.spider.entity;
 
 public enum ResultType {
   //成功
-  SUCCESS("0", "");
+  SUCCESS("0", ""),
+  ERR("1", "error");
 
   private final String code;
   private final String msg;

@@ -4,6 +4,7 @@ import cn.wudi.spider.entity.CommonQuery;
 import cn.wudi.spider.entity.CrawlerResult;
 import cn.wudi.spider.entity.CreateResult;
 import cn.wudi.spider.entity.Result;
+import cn.wudi.spider.entity.ResultType;
 import cn.wudi.spider.entity.Status;
 import cn.wudi.spider.robot.TopicCrawlerFind;
 import cn.wudi.spider.robot.TopicIdFind;
@@ -67,8 +68,11 @@ public class SpiderServiceImpl implements SpiderService {
     }
     TopicIdFind topicIdFind = new TopicIdFind();
     createLoggerAndClient(topicIdFind, query);
-    Result<CreateResult> result = topicIdFind.findTopId();
-    CreateResult createResult = result.getData();
+    Result result = topicIdFind.findTopId();
+    if (result.getReturnCode().equals(ResultType.ERR.getCode())) {
+      return result;
+    }
+    CreateResult createResult = (CreateResult) result.getData();
     topicTitleRedis.set(createResult);
     String resultTopicTitle = createResult.getTopicTitle();
     String topicTitleQuery = query.getTopicTitle();

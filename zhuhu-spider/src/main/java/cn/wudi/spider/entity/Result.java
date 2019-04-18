@@ -30,6 +30,14 @@ public class Result<T> implements Serializable {
     return result;
   }
 
+  public static <R> Result<R> fail(R data) {
+    Result<R> result = new Result<>();
+    result.returnCode = ResultType.ERR.getCode();
+    result.data = data;
+    result.message = ResultType.ERR.getMsg();
+    return result;
+  }
+
   @Override
   public String toString() {
     return JSONObject.toJSONString(this);

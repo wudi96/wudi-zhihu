@@ -1,11 +1,6 @@
 package cn.wudi.spider.robot.scheduler;
 
-import static cn.wudi.spider.constant.Constant.ANSWER_SUFFIX;
-import static cn.wudi.spider.constant.Constant.INCLUDE;
-import static cn.wudi.spider.constant.Constant.QUESTION_PREFIX;
-import static cn.wudi.spider.constant.Constant.TOP_API_PREFIX;
-import static cn.wudi.spider.constant.Constant.TOP_API_SUFFIX;
-
+import cn.wudi.spider.constant.Constant;
 import cn.wudi.spider.entity.Status;
 import cn.wudi.spider.entity.topic.Answer;
 import cn.wudi.spider.entity.topic.Question;
@@ -74,7 +69,7 @@ public class Task implements Runnable {
 
     int tenNum = topAnswerNumInt / 10;
     int tenElseNum = topAnswerNumInt % 10;
-    String topicContextUrl = TOP_API_PREFIX + topicId + TOP_API_SUFFIX;
+    String topicContextUrl = Constant.TOP_API_PREFIX + topicId + Constant.TOP_API_SUFFIX;
 
     ArrayList<TopicContent> topicContents = new ArrayList<>();
     for (int i = 0; i < tenNum; i++) {
@@ -108,7 +103,7 @@ public class Task implements Runnable {
       String questionId = questionJson.getString("id");
       question.setId(questionId);
       question.setCrawlTime(TimeFormatUtils.valueOf(new Date(), "yyyy-MM-dd HH:mm:ss"));
-      String questionUrl = QUESTION_PREFIX + questionId;
+      String questionUrl = Constant.QUESTION_PREFIX + questionId;
       question.setUrl(questionUrl);
       question.setTitle(questionJson.getString("title"));
       //问题细节
@@ -124,7 +119,7 @@ public class Task implements Runnable {
       String updatedTime = String.valueOf(JSONPath.eval(o, "$.target.updated_time"));
       Answer answer = new Answer();
       answer.setId(answerId);
-      answer.setUrl(questionUrl + ANSWER_SUFFIX + answerId);
+      answer.setUrl(questionUrl + Constant.ANSWER_SUFFIX + answerId);
       answer.setVoteCount(voteCount);
       answer.setCommentCount(commentCount);
       answer.setCreateTime(TimeFormatUtils
@@ -173,7 +168,7 @@ public class Task implements Runnable {
 
   private Response getResponse(String topicContextUrl, int tenNum, int tenElseNum) {
     return this.find.request().GET().url(topicContextUrl)
-        .query("include", INCLUDE)
+        .query("include", Constant.INCLUDE)
         .query("offset", String.valueOf(tenNum * 10))
         .query("limit", String.valueOf(tenElseNum))
         .send();

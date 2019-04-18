@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class TopicResult extends Find {
 
-  public Result<Topic> result(TopicContentMongo topicContentMongo) {
+  public Result result(TopicContentMongo topicContentMongo) {
     List<TopicContent> topicContents = topicContentMongo.get(topicId());
     Topic topic = new Topic();
     topic.setTopic(topicTitle());

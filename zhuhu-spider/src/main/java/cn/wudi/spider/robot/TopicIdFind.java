@@ -1,7 +1,6 @@
 package cn.wudi.spider.robot;
 
-import static cn.wudi.spider.constant.Constant.SEARCH_URL;
-
+import cn.wudi.spider.constant.Constant;
 import cn.wudi.spider.entity.CreateResult;
 import cn.wudi.spider.entity.Result;
 import cn.wudi.spider.http.Response;
@@ -18,10 +17,10 @@ import org.jsoup.select.Elements;
  */
 public class TopicIdFind extends Find {
 
-  public Result<CreateResult> findTopId() {
+  public Result findTopId() {
     String topicTitle = topicTitle();
     CreateResult createResult = new CreateResult();
-    Response searchTopicResponse = request().GET().url(SEARCH_URL)
+    Response searchTopicResponse = request().GET().url(Constant.SEARCH_URL)
         .query("type", "content")
         .query("q", topicTitle)
         .send();
@@ -37,7 +36,7 @@ public class TopicIdFind extends Find {
       }
     }
     if (topEle == null) {
-      return Result.ok(createResult);
+      return Result.fail("没有此话题");
     }
     String href = topEle.select("a").attr("href");
     String topSearch = topEle.text();

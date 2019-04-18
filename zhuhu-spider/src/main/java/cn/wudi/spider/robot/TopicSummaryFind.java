@@ -1,8 +1,6 @@
 package cn.wudi.spider.robot;
 
-import static cn.wudi.spider.constant.Constant.TOP_PREFIX;
-import static cn.wudi.spider.constant.Constant.TOP_SUFFIX;
-
+import cn.wudi.spider.constant.Constant;
 import cn.wudi.spider.entity.Result;
 import cn.wudi.spider.entity.SummaryResult;
 import cn.wudi.spider.http.Response;
@@ -17,13 +15,13 @@ import org.jsoup.select.Elements;
  */
 public class TopicSummaryFind extends Find {
 
-  public Result<SummaryResult> findTopicSummary() {
+  public Result findTopicSummary() {
     String topicTitle = topicTitle();
     String topicId = topicId();
     SummaryResult summaryResult = new SummaryResult();
     summaryResult.setTopicTitle(topicTitle);
     summaryResult.setTopicId(topicId);
-    String topicUrl = TOP_PREFIX + topicId + TOP_SUFFIX;
+    String topicUrl = Constant.TOP_PREFIX + topicId + Constant.TOP_SUFFIX;
     summaryResult.setTopicUrl(topicUrl);
     Response topSumResponse = request().GET().url(topicUrl).send();
     String topSumStr = topSumResponse.string();

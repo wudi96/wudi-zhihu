@@ -22,7 +22,7 @@ import cn.wudi.spider.service.mongo.TopicContentMongo;
 import cn.wudi.spider.service.redis.TopicTitleRedis;
 import cn.wudi.spider.service.thread.DefaultThreadFactory;
 import java.util.HashMap;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +55,7 @@ public class SpiderServiceImpl implements SpiderService {
     this.localLoggerFactory.setHomePath("./logs");
     this.topicTitleRedis = topicTitleRedis;
     this.executor = new ThreadPoolExecutor(5, 10, 5000, TimeUnit.MILLISECONDS,
-        new ArrayBlockingQueue<>(5), new DefaultThreadFactory());
+        new LinkedBlockingDeque<>(Integer.MAX_VALUE), new DefaultThreadFactory());
   }
 
   @Override
@@ -112,8 +112,9 @@ public class SpiderServiceImpl implements SpiderService {
     CrawlerResult crawlerResult = new CrawlerResult();
     crawlerResult.setStatus(Status.RUSHING);
     Task task = topicCrawlerFind.createTask(topicContentMongo, threadMap);
+    threadMap.put(task.getThreadName(), Status.RUSHING);
+
     Thread thread = executor.getThreadFactory().newThread(task);
-    threadMap.put(thread.getName(), Status.RUSHING);
     thread.start();
     return Result.ok(crawlerResult);
   }
